@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -531,8 +530,10 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Collection<Map<String, Object>> executeIndex(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) {
+	// public Collection<Map<String, Object>> executeIndex(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
+	public Map<String, Object> executeIndex(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 
 		log.debug(" executeIndex: resource: " + resource);
 		log.debug(" executeIndex: body: ");
@@ -574,7 +575,22 @@ public class HTTPAPIClient {
 		log.debug(" executeIndex: body: " + response.getResponseBody());
 		log.debug(response.getResponseBody());
 
-		return this.parseAsCollection(response.getResponseBody());
+		if( (response.getStatusCode() != 200) && 
+			(response.getStatusCode() != 201) ) {
+			log.error(" executeIndex: resource: " + resource);
+			log.error(" executeIndex: code: " + response.getStatusCode());
+			log.error(" executeIndex: status: " + response.getStatusText());
+			log.error(" executeIndex: body: " + response.getResponseBody());
+			log.error(response.getResponseBody());
+			throw new HTTPAPIClientException(
+				response.getStatusCode(),
+				response.getStatusText(),
+				response.getResponseBody()
+			);
+		}
+
+		// return this.parseAsCollection(response.getResponseBody());
+		return this.parse(response.getResponseBody());
 	}
 
 	/**
@@ -583,8 +599,10 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Collection<Map<String, Object>> executeIndex(String resource, Map<String, Object> parameters, Map<String, String> headers) {
+	// public Collection<Map<String, Object>> executeIndex(String resource, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
+	public Map<String, Object> executeIndex(String resource, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 		return this.executeIndex(resource, null, parameters, headers);
 	}
 
@@ -593,8 +611,10 @@ public class HTTPAPIClient {
 	 * @param resource
 	 * @param parameters
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Collection<Map<String, Object>> executeIndex(String resource, Map<String, Object> parameters) {
+	// public Collection<Map<String, Object>> executeIndex(String resource, Map<String, Object> parameters) throws HTTPAPIClientException {
+	public Map<String, Object> executeIndex(String resource, Map<String, Object> parameters) throws HTTPAPIClientException {
 		return this.executeIndex(resource, null, parameters, new HashMap<String, String>());
 	}
 
@@ -602,8 +622,10 @@ public class HTTPAPIClient {
 	 * 
 	 * @param resource
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Collection<Map<String, Object>> executeIndex(String resource) {
+	// public Collection<Map<String, Object>> executeIndex(String resource) throws HTTPAPIClientException {
+	public Map<String, Object> executeIndex(String resource) throws HTTPAPIClientException {
 		return this.executeIndex(resource, null, new HashMap<String, Object>(), new HashMap<String, String>());
 	}
 
@@ -614,8 +636,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeGet(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executeGet(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 
 		log.debug(" executeGet: resource: " + resource);
 		log.debug(" executeGet: body: ");
@@ -657,7 +680,22 @@ public class HTTPAPIClient {
 		log.debug(" executeGet: body: " + response.getResponseBody());
 		log.debug(response.getResponseBody());
 
-		return this.parseAsRecord(response.getResponseBody());
+		if( (response.getStatusCode() != 200) && 
+			(response.getStatusCode() != 201) ) {
+			log.error(" executeGet: resource: " + resource);
+			log.error(" executeGet: code: " + response.getStatusCode());
+			log.error(" executeGet: status: " + response.getStatusText());
+			log.error(" executeGet: body: " + response.getResponseBody());
+			log.error(response.getResponseBody());
+			throw new HTTPAPIClientException(
+				response.getStatusCode(),
+				response.getStatusText(),
+				response.getResponseBody()
+			);
+		}
+
+		// return this.parseAsRecord(response.getResponseBody());
+		return this.parse(response.getResponseBody());
 	}
 
 	/**
@@ -666,8 +704,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeGet(String resource, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executeGet(String resource, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 		return this.executeGet(resource, null, parameters, headers);
 	}
 
@@ -676,8 +715,9 @@ public class HTTPAPIClient {
 	 * @param resource
 	 * @param parameters
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeGet(String resource, Map<String, Object> parameters) {
+	public Map<String, Object> executeGet(String resource, Map<String, Object> parameters) throws HTTPAPIClientException {
 		return this.executeGet(resource, null, parameters, new HashMap<String, String>());
 	}
 
@@ -685,8 +725,9 @@ public class HTTPAPIClient {
 	 * 
 	 * @param resource
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeGet(String resource) {
+	public Map<String, Object> executeGet(String resource) throws HTTPAPIClientException {
 		return this.executeGet(resource, null, new HashMap<String, Object>(), new HashMap<String, String>());
 	}
 
@@ -697,8 +738,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePost(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executePost(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 
 		log.debug(" executePost: resource: " + resource);
 		log.debug(" executePost: body: ");
@@ -740,7 +782,22 @@ public class HTTPAPIClient {
 		log.debug(" executePost: body: " + response.getResponseBody());
 		log.debug(response.getResponseBody());
 
-		return this.parseAsRecord(response.getResponseBody());
+		if( (response.getStatusCode() != 200) && 
+			(response.getStatusCode() != 201) ) {
+			log.error(" executePost: resource: " + resource);
+			log.error(" executePost: code: " + response.getStatusCode());
+			log.error(" executePost: status: " + response.getStatusText());
+			log.error(" executePost: body: " + response.getResponseBody());
+			log.error(response.getResponseBody());
+			throw new HTTPAPIClientException(
+				response.getStatusCode(),
+				response.getStatusText(),
+				response.getResponseBody()
+			);
+		}
+
+		// return this.parseAsRecord(response.getResponseBody());
+		return this.parse(response.getResponseBody());
 	}
 
 	/**
@@ -749,8 +806,9 @@ public class HTTPAPIClient {
 	 * @param body
 	 * @param parameters
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePost(String resource, String body, Map<String, Object> parameters) {
+	public Map<String, Object> executePost(String resource, String body, Map<String, Object> parameters) throws HTTPAPIClientException {
 		return this.executePost(resource, body, parameters, new HashMap<String, String>());
 	}
 
@@ -759,8 +817,9 @@ public class HTTPAPIClient {
 	 * @param resource
 	 * @param body
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePost(String resource, String body) {
+	public Map<String, Object> executePost(String resource, String body) throws HTTPAPIClientException {
 		return this.executePost(resource, body, new HashMap<String, Object>(), new HashMap<String, String>());
 	}
 
@@ -770,8 +829,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePost(String resource, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executePost(String resource, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 		return this.executePost(resource, null, parameters, headers);
 	}
 
@@ -780,8 +840,9 @@ public class HTTPAPIClient {
 	 * @param resource
 	 * @param parameters
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePost(String resource, Map<String, Object> parameters) {
+	public Map<String, Object> executePost(String resource, Map<String, Object> parameters) throws HTTPAPIClientException {
 		return this.executePost(resource, null, parameters, new HashMap<String, String>());
 	}
 
@@ -789,8 +850,9 @@ public class HTTPAPIClient {
 	 * 
 	 * @param resource
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePost(String resource) {
+	public Map<String, Object> executePost(String resource) throws HTTPAPIClientException {
 		return this.executePost(resource, null, new HashMap<String, Object>(), new HashMap<String, String>());
 	}
 
@@ -801,8 +863,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePut(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executePut(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 
 		log.debug(" executePut: resource: " + resource);
 		log.debug(" executePut: body: ");
@@ -844,7 +907,22 @@ public class HTTPAPIClient {
 		log.debug(" executeUpdate: body: " + response.getResponseBody());
 		log.debug(response.getResponseBody());
 
-		return this.parseAsRecord(response.getResponseBody());
+		if( (response.getStatusCode() != 200) && 
+			(response.getStatusCode() != 201) ) {
+			log.error(" executeUpdate: resource: " + resource);
+			log.error(" executeUpdate: code: " + response.getStatusCode());
+			log.error(" executeUpdate: status: " + response.getStatusText());
+			log.error(" executeUpdate: body: " + response.getResponseBody());
+			log.error(response.getResponseBody());
+			throw new HTTPAPIClientException(
+				response.getStatusCode(),
+				response.getStatusText(),
+				response.getResponseBody()
+			);
+		}
+
+		// return this.parseAsRecord(response.getResponseBody());
+		return this.parse(response.getResponseBody());
 	}
 
 	/**
@@ -853,8 +931,9 @@ public class HTTPAPIClient {
 	 * @param body
 	 * @param parameters
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePut(String resource, String body, Map<String, Object> parameters) {
+	public Map<String, Object> executePut(String resource, String body, Map<String, Object> parameters) throws HTTPAPIClientException {
 		return this.executePut(resource, body, parameters, new HashMap<String, String>());
 	}
 
@@ -863,8 +942,9 @@ public class HTTPAPIClient {
 	 * @param resource
 	 * @param body
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePut(String resource, String body) {
+	public Map<String, Object> executePut(String resource, String body) throws HTTPAPIClientException {
 		return this.executePut(resource, body, new HashMap<String, Object>(), new HashMap<String, String>());
 	}
 
@@ -874,8 +954,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePut(String resource, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executePut(String resource, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 		return this.executePut(resource, null, parameters, headers);
 	}
 
@@ -884,8 +965,9 @@ public class HTTPAPIClient {
 	 * @param resource
 	 * @param parameters
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePut(String resource, Map<String, Object> parameters) {
+	public Map<String, Object> executePut(String resource, Map<String, Object> parameters) throws HTTPAPIClientException {
 		return this.executePut(resource, null, parameters, new HashMap<String, String>());
 	}
 
@@ -893,8 +975,9 @@ public class HTTPAPIClient {
 	 * 
 	 * @param resource
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executePut(String resource) {
+	public Map<String, Object> executePut(String resource) throws HTTPAPIClientException {
 		return this.executePut(resource, null, new HashMap<String, Object>(), new HashMap<String, String>());
 	}
 
@@ -905,8 +988,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeDelete(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executeDelete(String resource, String body, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 
 		log.debug(" executeDelete: resource: " + resource);
 		log.debug(" executeDelete: body: ");
@@ -948,7 +1032,22 @@ public class HTTPAPIClient {
 		log.debug(" executeDelete: body: " + response.getResponseBody());
 		log.debug(response.getResponseBody());
 
-		return this.parseAsRecord(response.getResponseBody());
+		if( (response.getStatusCode() != 200) && 
+			(response.getStatusCode() != 201) ) {
+			log.error(" executeDelete: resource: " + resource);
+			log.error(" executeDelete: code: " + response.getStatusCode());
+			log.error(" executeDelete: status: " + response.getStatusText());
+			log.error(" executeDelete: body: " + response.getResponseBody());
+			log.error(response.getResponseBody());
+			throw new HTTPAPIClientException(
+				response.getStatusCode(),
+				response.getStatusText(),
+				response.getResponseBody()
+			);
+		}
+
+		// return this.parseAsRecord(response.getResponseBody());
+		return this.parse(response.getResponseBody());
 	}
 
 	/**
@@ -957,8 +1056,9 @@ public class HTTPAPIClient {
 	 * @param parameters
 	 * @param headers
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeDelete(String resource, Map<String, Object> parameters, Map<String, String> headers) {
+	public Map<String, Object> executeDelete(String resource, Map<String, Object> parameters, Map<String, String> headers) throws HTTPAPIClientException {
 		return this.executeDelete(resource, null, parameters, headers);
 	}
 
@@ -967,8 +1067,9 @@ public class HTTPAPIClient {
 	 * @param resource
 	 * @param parameters
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeDelete(String resource, Map<String, Object> parameters) {
+	public Map<String, Object> executeDelete(String resource, Map<String, Object> parameters) throws HTTPAPIClientException {
 		return this.executeDelete(resource, null, parameters, new HashMap<String, String>());
 	}
 
@@ -976,30 +1077,42 @@ public class HTTPAPIClient {
 	 * 
 	 * @param resource
 	 * @return
+	 * @throws HTTPAPIClientException 
 	 */
-	public Map<String, Object> executeDelete(String resource) {
+	public Map<String, Object> executeDelete(String resource) throws HTTPAPIClientException {
 		return this.executeDelete(resource, null, new HashMap<String, Object>(), new HashMap<String, String>());
 	}
 
-	/**
-	 * 
-	 * @param response
-	 * @return
-	 */
-	public Collection<Map<String, Object>> parseAsCollection(String response) {
-		Gson gson = new Gson();
-		Collection<Map<String, Object>> resp = (Collection<Map<String, Object>>)gson.fromJson(response, Map.class);
-		return resp;
-	}
+//	/**
+//	 * 
+//	 * @param response
+//	 * @return
+//	 */
+//	public Collection<Map<String, Object>> parseAsCollection(String response) {
+//		Gson gson = new Gson();
+//		Collection<Map<String, Object>> resp = (Collection<Map<String, Object>>)gson.fromJson(response, Map.class);
+//		return resp;
+//	}
+
+//	/**
+//	 * 
+//	 * @param response
+//	 * @return
+//	 */
+//	public Map<String, Object> parseAsRecord(String response) {
+//		Gson gson = new Gson();
+//		Map<String, Object> resp = (Map<String, Object>)gson.fromJson(response, Map.class);
+//		return resp;
+//	}
 
 	/**
 	 * 
 	 * @param response
 	 * @return
 	 */
-	public Map<String, Object> parseAsRecord(String response) {
+	public Map<String, Object> parse(String response) {
 		Gson gson = new Gson();
-		Map<String, Object> resp = (Map<String, Object>)gson.fromJson(response, Map.class);
+		Map<String, Object> resp = gson.fromJson(response, Map.class);
 		return resp;
 	}
 
